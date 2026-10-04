@@ -1,5 +1,5 @@
 import { Context } from './context'
-import { toPromise, toValueSync, isFunction, forOwn, isString, strictUniq } from './util'
+import { toPromise, toValueSync, isFunction, forOwn, isString, strictUniq, isSafeString } from './util'
 import { TagClass, createTagClass, TagImplOptions, FilterImplOptions, Template, Value, StaticAnalysisOptions, StaticAnalysis, analyze, analyzeSync, SegmentArray } from './template'
 import { LookupType } from './fs/loader'
 import { Render } from './render'
@@ -30,9 +30,11 @@ export class Liquid {
     return parser.parse(html, filepath)
   }
 
-  public _render (tpl: Template[], scope: Context | object | undefined, renderOptions: RenderOptions): IterableIterator<any> {
+  public * _render (tpl: Template[], scope: Context | object | undefined, renderOptions: RenderOptions): IterableIterator<any> {
     const ctx = scope instanceof Context ? scope : new Context(scope, this.options, renderOptions)
-    return this.renderer.renderTemplates(tpl, ctx)
+    const result = yield * this.renderer.renderTemplates(tpl, ctx)
+    // unwrap to a plain string for the public render* methods
+    return isSafeString(result) ? result.toString() : result
   }
   public async render (tpl: Template[], scope?: object, renderOptions?: RenderOptions): Promise<any> {
     return toPromise(this._render(tpl, scope, { ...renderOptions, sync: false }))

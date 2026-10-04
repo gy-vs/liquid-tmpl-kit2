@@ -78,7 +78,7 @@ export interface LiquidOptions {
   globals?: object;
   /** Whether or not to keep value type when writing the Output, not working for streamed rendering. Defaults to `false`. */
   keepOutputType?: boolean;
-  /** Default escape filter applied to output values, when set, you'll have to add `| raw` for values don't need to be escaped. Defaults to `undefined`. */
+  /** Default escape filter applied to output values, when set, you'll have to add `| raw` for values don't need to be escaped. Template literals and already escaped outputs (e.g. contents of `{% capture %}` and layout blocks) are considered safe and will not be escaped again. Defaults to `undefined`. */
   outputEscape?: OutputEscapeOption;
   /** An object of operators for conditional statements. Defaults to the regular Liquid operators. */
   operators?: Operators;
