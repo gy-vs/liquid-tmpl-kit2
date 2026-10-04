@@ -1,4 +1,5 @@
 import { Drop } from '../drop/drop'
+import { isSafeString } from './safe-string'
 
 export const toString = Object.prototype.toString
 const toLowerCase = String.prototype.toLowerCase
@@ -63,6 +64,7 @@ export function toArray (val: any) {
 }
 
 export function toValue (value: any): any {
+  if (isSafeString(value)) return value.toString()
   return (value instanceof Drop && isFunction(value.valueOf)) ? value.valueOf() : value
 }
 

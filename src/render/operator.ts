@@ -1,6 +1,6 @@
 import { isComparable } from '../drop/comparable'
 import { Context } from '../context'
-import { toValue } from '../util'
+import { toValue, isSafeString } from '../util'
 import { isFalsy, isTruthy } from '../render/boolean'
 import { isArray, isFunction } from '../util/underscore'
 
@@ -44,6 +44,8 @@ export const defaultOperators: Operators = {
 }
 
 export function equals (lhs: any, rhs: any): boolean {
+  if (isSafeString(lhs)) lhs = lhs.toString()
+  if (isSafeString(rhs)) rhs = rhs.toString()
   if (isComparable(lhs)) return lhs.equals(rhs)
   if (isComparable(rhs)) return rhs.equals(lhs)
   lhs = toValue(lhs)

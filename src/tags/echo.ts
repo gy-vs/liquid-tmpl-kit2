@@ -1,5 +1,6 @@
 import { Liquid, TopLevelToken, Emitter, Value, TagToken, Context, Tag } from '..'
 import { Arguments } from '../template'
+import { appendOutputEscape } from '../template/output'
 
 export default class extends Tag {
   private value?: Value
@@ -9,6 +10,7 @@ export default class extends Tag {
     this.tokenizer.skipBlank()
     if (!this.tokenizer.end()) {
       this.value = new Value(this.tokenizer.readFilteredValue(), this.liquid)
+      appendOutputEscape(this.value, this.liquid)
     }
   }
   * render (ctx: Context, emitter: Emitter): Generator<unknown, void, unknown> {

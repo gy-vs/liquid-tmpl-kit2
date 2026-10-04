@@ -1,7 +1,7 @@
 import { Liquid, Tag, Template, Context, TagToken, TopLevelToken } from '..'
 import { Parser } from '../parser'
 import { IdentifierToken, QuotedToken } from '../tokens'
-import { isTagToken } from '../util'
+import { isTagToken, isString, toSafeString } from '../util'
 
 export default class extends Tag {
   identifier: IdentifierToken | QuotedToken
@@ -30,7 +30,10 @@ export default class extends Tag {
 
   * render (ctx: Context): Generator<unknown, void, string> {
     const r = this.liquid.renderer
-    const html = yield r.renderTemplates(this.templates, ctx)
+    let html = yield r.renderTemplates(this.templates, ctx)
+    // captured content is template output: literals and already-escaped
+    // values, mark it as safe so it's not escaped again on output
+    if (ctx.opts.outputEscape && isString(html)) html = toSafeString(html)
     ctx.bottom()[this.variable] = html
   }
 

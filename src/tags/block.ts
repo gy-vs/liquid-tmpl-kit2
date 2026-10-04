@@ -25,13 +25,14 @@ export default class extends Tag {
     if (ctx.getRegister('blockMode') === BlockMode.STORE) {
       ctx.getRegister('blocks')[this.block] = blockRender
     } else {
-      yield blockRender(new BlockDrop(), emitter)
+      yield blockRender(new BlockDrop(undefined, !!ctx.opts.outputEscape), emitter)
     }
   }
 
   private getBlockRender (ctx: Context) {
     const { liquid, templates } = this
     const renderChild = ctx.getRegister('blocks')[this.block]
+    const outputEscapeEnabled = !!ctx.opts.outputEscape
     const renderCurrent = function * (superBlock: BlockDrop, emitter: Emitter) {
       // add {{ block.super }} support when rendering
       ctx.push({ block: superBlock })
@@ -41,7 +42,8 @@ export default class extends Tag {
     return renderChild
       ? (superBlock: BlockDrop, emitter: Emitter) => renderChild(
         new BlockDrop(
-          (emitter: Emitter) => renderCurrent(superBlock, emitter)
+          (emitter: Emitter) => renderCurrent(superBlock, emitter),
+          outputEscapeEnabled
         ),
         emitter)
       : renderCurrent
